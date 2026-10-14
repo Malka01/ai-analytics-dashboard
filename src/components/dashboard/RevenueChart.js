@@ -20,7 +20,15 @@ const revenueData = [
   { month: "Oct", revenue: 42000 },
 ];
 
-export default function RevenueChart() {
+const dataByRange = {
+  "7days": revenueData.slice(-2),
+  "30days": revenueData.slice(-4),
+  "90days": revenueData,
+};
+
+export default function RevenueChart({ dateRange }) {
+  const chartData = dataByRange[dateRange] ?? revenueData;
+
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-6">
@@ -28,33 +36,33 @@ export default function RevenueChart() {
           Revenue Overview
         </h2>
         <p className="mt-1 text-sm text-slate-500">
-          Monthly revenue performance
+          Showing {dateRange === "7days"
+            ? "last 7 days"
+            : dateRange === "30days"
+              ? "last 30 days"
+              : "last 90 days"}
         </p>
       </div>
 
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={revenueData}
+            data={chartData}
             margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-
             <XAxis dataKey="month" tickLine={false} axisLine={false} />
-
             <YAxis
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `$${value / 1000}k`}
             />
-
             <Tooltip
               formatter={(value) => [
                 `$${Number(value).toLocaleString()}`,
                 "Revenue",
               ]}
             />
-
             <Line
               type="monotone"
               dataKey="revenue"
